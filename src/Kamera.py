@@ -99,7 +99,6 @@ class Kamera:
         self._show_all_labels_and_options(False)
         self._show_save_and_cancel_buttons(False)
         self._show_init_buttons(True)
-        
 
 
 class VideoLabel(Tk.Label):
@@ -113,7 +112,9 @@ class VideoLabel(Tk.Label):
         self.update()
     
     def getImage(self):
-        frame = cv.QueryFrame(self.capture)
+        frame_raw = cv.QueryFrame(self.capture)
+        frame = cv.CreateImage(cv.GetSize(frame_raw), 8, 3)
+        cv.CvtColor(frame_raw, frame, cv.CV_BGR2RGB)
         pil_frame = Image.fromstring("RGB", cv.GetSize(frame), frame.tostring())
         data = numpy.asarray(pil_frame)
         data = numpy.fliplr(data)

@@ -3,6 +3,7 @@ import Image
 import ImageTk
 import numpy
 import Tkinter as Tk
+import inspect
 
 CAMERAINDEX = 1
 
@@ -18,9 +19,19 @@ class Kamera:
     buttons = {}
     video = None
     
+    effects_loader = None
+    
+    # TODO: remove this
+    def _test_use_black_white_effect(self):
+        self.effects_loader.set_effect('BlackWhiteEffect')
+    
     def __init__(self):
+        self.effects_loader = EffectsLoader()
+        self.effects_loader.load_effects()
         self.window = Tk.Tk()
         self.init_gui()
+        # TODO: remove this
+        self._test_use_black_white_effect()
     
     def run(self):
         self.window.mainloop()
@@ -100,12 +111,42 @@ class Kamera:
         self._show_save_and_cancel_buttons(False)
         self._show_init_buttons(True)
 
+class EffectsLoader(object):
+    """ singleton """
+    _instance = None
+    
+    effects_list = {}
+    current_effect = None
+    
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(EffectsLoader, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+    
+    def load_effects(cls):
+        import effects
+        for name, obj in inspect.getmembers(effects):
+            if inspect.isclass(obj) and name != 'KameraEffectBase':
+                cls._instance.effects_list[name] = obj
+        print 'Loaded effects:', ",".join(cls._instance.effects_list)
+    
+    def get_current_effect(cls):
+        return cls._instance.current_effect
+    
+    def get_effects_list(cls):
+        return cls._instance.effects_list
+    
+    def set_effect(cls, effect_name):
+        cls._instance.current_effect = cls._instance.effects_list[effect_name]
+
 
 class VideoLabel(Tk.Label):
     capture = None
     photo_image = None
+    effects_loader = None
     
     def __init__(self, *args, **kwarg):
+        self.effects_loader = EffectsLoader()
         Tk.Label.__init__(self, *args, **kwarg)
         global CAMERAINDEX
         self.capture = cv.CaptureFromCAM(CAMERAINDEX)
@@ -119,6 +160,10 @@ class VideoLabel(Tk.Label):
         data = numpy.asarray(pil_frame)
         data = numpy.fliplr(data)
         pil_frame = Image.fromarray(data)
+        # Apply effects here?
+        current_effect_class = self.effects_loader.get_current_effect()
+        if current_effect_class is not None:
+            pil_frame = current_effect_class().process_image(pil_frame)
         self.photo_image = ImageTk.PhotoImage(pil_frame)
         
     def update(self):

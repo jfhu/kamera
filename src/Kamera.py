@@ -3,6 +3,7 @@ import Image
 import ImageTk
 import numpy
 import Tkinter as Tk
+from Tkinter import N, E, W, S
 import inspect
 import sys
 
@@ -23,35 +24,33 @@ class Kamera:
     effects_loader = None
     tipwindow = None
 
-# Creates a tooptip box for a widget.
-def createToolTip( widget, text ):
-    def enter( event ):
-        global tipwindow
-        x = y = 0
-        if tipwindow or not text:
-            return
-        x, y, cx, cy = widget.bbox( "insert" )
-        x += widget.winfo_rootx() + 27
-        y += widget.winfo_rooty() + 27
-        # Creates a toplevel window
-        tipwindow = tw = Toplevel( widget )
-        # Leaves only the label and removes the app window
-        tw.wm_overrideredirect( 1 )
-        tw.wm_geometry( "+%d+%d" % ( x, y ) )
-        label = Label( tw, text = text, justify = LEFT,
-                       background = "#ffffe0", relief = SOLID, borderwidth = 1,
-                       font = ( "tahoma", "8", "normal" ) )
-        label.grid( ipadx = 1 )
+    # Creates a tooptip box for a widget.
+    def createToolTip(self, widget, text ):
+        def enter( event ):
+            x = y = 0
+            if self.tipwindow or not text:
+                return
+            x, y, cx, cy = widget.bbox( "insert" )
+            x += widget.winfo_rootx() + 27
+            y += widget.winfo_rooty() + 27
+            # Creates a toplevel window
+            self.tipwindow = tw = Tk.Toplevel( widget )
+            # Leaves only the label and removes the app window
+            tw.wm_overrideredirect( 1 )
+            tw.wm_geometry( "+%d+%d" % ( x, y ) )
+            label = Tk.Label( tw, text = text, justify = Tk.LEFT,
+                           background = "#ffffe0", relief = Tk.SOLID, borderwidth = 1,
+                           font = ( "tahoma", "8", "normal" ) )
+            label.grid( ipadx = 1 )
         
-    def close( event ):
-        global tipwindow
-        tw = tipwindow
-        tipwindow = None
-        if tw:
-            tw.destroy()
+        def close( event ):
+            tw = self.tipwindow
+            tipwindow = None
+            if tw:
+                tw.destroy()
             
-    widget.bind( "<Enter>", enter )
-    widget.bind( "<Leave>", close )
+        widget.bind( "<Enter>", enter )
+        widget.bind( "<Leave>", close )
 
     # TODO: remove this
     ##def _test_use_black_white_effect(self):
@@ -93,67 +92,67 @@ def createToolTip( widget, text ):
 
         self.labels['Background'] = Tk.Label(self.window, text='Background', font=("16")).grid(row=1,padx=5)
         self.buttons['import'] = Tk.Button(self.window, command=self.event_import, text='Import')
-        self.buttons['import']grid(row=2, sticky=N+E+W+S)
-        createToolTip(self.buttons['import'],'Import background from an image file')
+        self.buttons['import'].grid(row=2, sticky=N+E+W+S)
+        self.createToolTip(self.buttons['import'],'Import background from an image file')
         self.buttons['reference'] = Tk.Button(self.window, command=self.event_reference, text='Reference')
         self.buttons['reference'].grid(row=3, sticky=N+E+W+S)
-        createToolTip(self.buttons['reference'],'Step outside of the frame and take a picture of the background')
+        self.createToolTip(self.buttons['reference'],'Step outside of the frame and take a picture of the background')
         self.buttons['disable'] = Tk.Button(self.window, command=self.event_disable, text='Disable')
-        self.buttons['disable'](row=4, sticky=N+E+W+S)
-        createToolTip(self.buttons['disable'],'Restore the real background')
+        self.buttons['disable'].grid(row=4, sticky=N+E+W+S)
+        self.createToolTip(self.buttons['disable'],'Restore the real background')
 
-        self.labels['Effects'] = Tk.Label(self.window, text='Effects', font=("16")).grid(row=1,column=1,columnspan=2,padx=5)
+        self.labels['Effects'] = Tk.Label(self.window, text='Effects', font=("16")).grid(row=1,column=2,padx=5)
         self.labels['color'] = Tk.Label(self.window, text='Change Color:').grid(row=2, column=1, sticky=E)
         self.labels['mirror'] = Tk.Label(self.window, text='Mirror:').grid(row=3, column=1, sticky=E)
         self.options['effects1'] = Tk.OptionMenu(self.window, str_var_a, 'Original', 'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R')
         self.options['effects1'].grid(row=2,column=2, sticky=N+E+W+S)
-        createToolTip(self.options['effects1'],'Remove, Swap, or Cycle colors')
+        self.createToolTip(self.options['effects1'],'Remove, Swap, or Cycle colors')
         self.options['effects2'] = Tk.OptionMenu(self.window, str_var_b, 'No Mirror', 'Vertical', 'Horizontal')
         self.options['effects2'].grid(row=3,column=2, sticky=N+E+W+S)
-        createToolTip(self.options['effects2'],'Reflect through the middle')
-        self.buttons['apply1'] = Tk.Button(self.window, command=self.event_save, text='Apply')
-        self.buttons['apply1'].grid(row=4,column=2,sticky=N+E+W+S)
-        createToolTip(self.buttons['apply1'],'Apply the selected effects')
+        self.createToolTip(self.options['effects2'],'Reflect through the middle')
+        # self.buttons['apply1'] = Tk.Button(self.window, command=self.event_save, text='Apply')
+        # self.buttons['apply1'].grid(row=4,column=2,sticky=N+E+W+S)
+        # self.createToolTip(self.buttons['apply1'],'Apply the selected effects')
 
-        self.labels['decoration'] = Tk.Label(self.window, text='Decoration', font=("16")).grid(row=1,column=3,padx=5)
+        self.labels['decoration'] = Tk.Label(self.window, text='Decoration', font=("16")).grid(row=5,column=0,padx=5)
         self.buttons['heart'] = Tk.Button(self.window, command=self.event_heart, text='Heart')
-        self.buttons['heart'].grid(row=2,column=3,sticky=N+E+W+S)
-        createToolTip(self.buttons['heart'],'Left click to add hearts, Right click to stop')
+        self.buttons['heart'].grid(row=6,column=0,sticky=N+E+W+S)
+        self.createToolTip(self.buttons['heart'],'Left click to add hearts, Right click to stop')
         self.buttons['star'] = Tk.Button(self.window, command=self.event_star, text='Star')
-        self.buttons['star'].grid(row=3,column=3,sticky=N+E+W+S)
-        createToolTip(self.buttons['star'],'Left click to add stars, Right click to stop')
+        self.buttons['star'].grid(row=7,column=0,sticky=N+E+W+S)
+        self.createToolTip(self.buttons['star'],'Left click to add stars, Right click to stop')
         self.buttons['circle'] = Tk.Button(self.window, command=self.event_circle, text='Circle')
-        self.buttons['circle'].grid(row=4,column=3,sticky=N+E+W+S)
-        createToolTip(self.buttons['circle'],'Left click to add circles, Right click to stop')
+        self.buttons['circle'].grid(row=8,column=0,sticky=N+E+W+S)
+        self.createToolTip(self.buttons['circle'],'Left click to add circles, Right click to stop')
 
-        self.labels['facedetect'] = Tk.Label(self.window, text='Face Detection', font=("16")).grid(row=1,column=4,columnspan=2,padx=5)
-        self.labels['hair'] = Tk.Label(self.window, text='Hair:').grid(row=2,column=4, sticky=E)
-        self.labels['eyes'] = Tk.Label(self.window, text='Eyes:').grid(row=3,column=4, sticky=E)
-        self.labels['nose'] = Tk.Label(self.window, text='Nose:').grid(row=4,column=4, sticky=E)
-        self.labels['mouth'] = Tk.Label(self.window, text='Mouth:').grid(row=5,column=4, sticky=E)
+        self.labels['facedetect'] = Tk.Label(self.window, text='Face Detection', font=("16")).grid(row=4,column=2,columnspan=2,padx=5)
+        self.labels['hair'] = Tk.Label(self.window, text='Hair:').grid(row=5,column=1, sticky=E)
+        self.labels['eyes'] = Tk.Label(self.window, text='Eyes:').grid(row=6,column=1, sticky=E)
+        self.labels['nose'] = Tk.Label(self.window, text='Nose:').grid(row=7,column=1, sticky=E)
+        self.labels['mouth'] = Tk.Label(self.window, text='Mouth:').grid(row=8,column=1, sticky=E)
         self.options['face1'] = Tk.OptionMenu(self.window, str_var_c, 'None')
-        self.options['face1'].grid(row=2,column=5, sticky=N+E+W+S)
-        createToolTip(self.options['face1'],'Wear hats and wigs')
+        self.options['face1'].grid(row=5,column=2, sticky=N+E+W+S)
+        self.createToolTip(self.options['face1'],'Wear hats and wigs')
         self.options['face2'] = Tk.OptionMenu(self.window, str_var_d, 'None')
-        self.options['face2'].grid(row=3,column=5, sticky=N+E+W+S)
-        createToolTip(self.options['face2'],'Wear glasses')
+        self.options['face2'].grid(row=6,column=2, sticky=N+E+W+S)
+        self.createToolTip(self.options['face2'],'Wear glasses')
         self.options['face3'] = Tk.OptionMenu(self.window, str_var_e, 'None')
-        self.options['face3'].grid(row=4,column=5, sticky=N+E+W+S)
-        createToolTip(self.options['face3'],'Add a mustache')
+        self.options['face3'].grid(row=7,column=2, sticky=N+E+W+S)
+        self.createToolTip(self.options['face3'],'Add a mustache')
         self.options['face4'] = Tk.OptionMenu(self.window, str_var_f, 'None')
-        self.options['face4'].grid(row=5,column=5, sticky=N+E+W+S)
-        createToolTip(self.options['face4'],'Add a beard')
-        self.buttons['apply2'] = Tk.Button(self.window, command=self.event_save2, text='Apply')
-        self.buttons['apply2'].grid(row=6,column=5,sticky=N+E+W+S)
-        createToolTip(self.buttons['apply2'],'Apply the selected objects to your face')
+        self.options['face4'].grid(row=8,column=2, sticky=N+E+W+S)
+        self.createToolTip(self.options['face4'],'Add a beard')
+        self.buttons['apply'] = Tk.Button(self.window, command=self.event_save, text='Apply')
+        self.buttons['apply'].grid(row=10,column=0,sticky=N+E+W+S,pady=10)
+        self.createToolTip(self.buttons['apply'],'Apply the selected effects')
 
-        self.labels['Save'] = Tk.Label(self.window, text='Save', font=("16")).grid(row=1,column=7,padx=5)
+        # self.labels['Save'] = Tk.Label(self.window, text='Save', font=("16")).grid(row=1,column=7,padx=5)
         self.buttons['screenshot'] = Tk.Button(self.window, command=self.event_screenshot, text='Screenshot')
-        self.buttons['screenshot'].grid(row=2, column=7, sticky=N+E+W+S)
-        createToolTip(self.buttons['screenshot'],'Save a screenshot')
+        self.buttons['screenshot'].grid(row=10, column=1, sticky=N+E+W+S, pady=10)
+        self.createToolTip(self.buttons['screenshot'],'Save a screenshot')
         self.buttons['record'] = Tk.Button(self.window, command=self.event_record, text='Record')
-        self.buttons['record'].grid(row=3, column=7, sticky=N+E+W+S)
-        createToolTip(self.buttons['record'],'Start a recording')
+        self.buttons['record'].grid(row=10, column=2, sticky=N+E+W+S, pady=10)
+        self.createToolTip(self.buttons['record'],'Start a recording')
     
     def event_import(self):
         print 'import bg'
@@ -171,10 +170,11 @@ def createToolTip( widget, text ):
         print 'recording started'    
     
     def event_save(self):
-        print str_var_a.get(), str_var_b.get()
+        pass
+        # print str_var_a.get(), str_var_b.get()
 
-    def event_save2(self):
-        print str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get()
+    # def event_save2(self):
+    #     print str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get()
     
     def event_heart(self):
         print 'add hearts'

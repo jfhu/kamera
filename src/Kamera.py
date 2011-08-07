@@ -124,7 +124,7 @@ class Kamera:
         self.createToolTip(self.options['decoration'],'Choose from a variety of items to add')
         self.buttons['paste'] = Tk.Button(self.window, command=self.event_paste, text='Paste')
         self.buttons['paste'].grid(row=7,column=0,sticky=N+E+W+S)
-        self.createToolTip(self.buttons['star'],'Click to add selected decoration')
+        self.createToolTip(self.buttons['paste'],'Click to add selected decoration')
 
         self.labels['facedetect'] = Tk.Label(self.window, text='Face Detection', font=("Impact","16")).grid(row=4,column=2,columnspan=2,padx=5)
         self.labels['hair'] = Tk.Label(self.window, text='Hair:').grid(row=5,column=1, sticky=E)

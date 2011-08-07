@@ -6,6 +6,7 @@ import Tkinter as Tk
 from Tkinter import N, E, W, S
 import inspect
 import sys
+import tkFileDialog
 
 CAMERAINDEX = 1
 
@@ -90,6 +91,8 @@ class Kamera:
         str_var_e.set('None')
         str_var_f = Tk.StringVar()
         str_var_f.set('None')
+        str_var_g = Tk.StringVar()
+        str_var_g.set('None')
 
         self.labels['Background'] = Tk.Label(self.window, text='Background', font=("Impact","16")).grid(row=1,padx=5)
         self.buttons['import'] = Tk.Button(self.window, command=self.event_import, text='Import')
@@ -116,15 +119,12 @@ class Kamera:
         # self.createToolTip(self.buttons['apply1'],'Apply the selected effects')
 
         self.labels['decoration'] = Tk.Label(self.window, text='Decoration', font=("Impact","16")).grid(row=5,column=0,padx=5)
-        self.buttons['heart'] = Tk.Button(self.window, command=self.event_heart, text='Heart')
-        self.buttons['heart'].grid(row=6,column=0,sticky=N+E+W+S)
-        self.createToolTip(self.buttons['heart'],'Left click to add hearts, Right click to stop')
-        self.buttons['star'] = Tk.Button(self.window, command=self.event_star, text='Star')
-        self.buttons['star'].grid(row=7,column=0,sticky=N+E+W+S)
-        self.createToolTip(self.buttons['star'],'Left click to add stars, Right click to stop')
-        self.buttons['circle'] = Tk.Button(self.window, command=self.event_circle, text='Circle')
-        self.buttons['circle'].grid(row=8,column=0,sticky=N+E+W+S)
-        self.createToolTip(self.buttons['circle'],'Left click to add circles, Right click to stop')
+        self.options['decoration'] = Tk.OptionMenu(self.window, str_var_g, 'None', 'Elephant', 'Giraffe', 'Goat', 'Balloons', 'Kiss', 'Plumber', 'Mushroom', 'Star', 'Shining Star', 'Heart')
+        self.options['decoration'].grid(row=6,column=0, sticky=N+E+W+S)
+        self.createToolTip(self.options['decoration'],'Choose from a variety of items to add')
+        self.buttons['paste'] = Tk.Button(self.window, command=self.event_paste, text='Paste')
+        self.buttons['paste'].grid(row=7,column=0,sticky=N+E+W+S)
+        self.createToolTip(self.buttons['star'],'Click to add selected decoration')
 
         self.labels['facedetect'] = Tk.Label(self.window, text='Face Detection', font=("Impact","16")).grid(row=4,column=2,columnspan=2,padx=5)
         self.labels['hair'] = Tk.Label(self.window, text='Hair:').grid(row=5,column=1, sticky=E)
@@ -156,7 +156,11 @@ class Kamera:
         self.createToolTip(self.buttons['record'],'Start a recording')
     
     def event_import(self):
-        print 'import bg'
+        filename = tkFileDialog.askopenfilename(title='Import Background Image',filetypes=[('Images', ('.jpg','.gif','.png')),('all files', '.*')])
+        if filename == "":
+            pass
+        else:
+            imp = Image.open(filename)
 
     def event_reference(self):
         print 'take reference photo'
@@ -173,18 +177,19 @@ class Kamera:
     def event_save(self):
         pass
         # print str_var_a.get(), str_var_b.get()
-
-    # def event_save2(self):
     #     print str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get()
     
-    def event_heart(self):
-        print 'add hearts'
+    def event_clicked(self, event):
+        print 'paste ', str_var_g.get(), ' at ', event.x, event.y
 
-    def event_star(self):
-        print 'add stars'
-
-    def event_circle(self):
-        print 'add circles'
+    def event_paste(self):
+        print 'add', str_var_g.get()
+        if str_var_g.get() == None:
+            pass
+        else:
+            frame = Frame(self.window, width=640, height=480)
+            frame.bind("<Button-1>", event_clicked)
+            frame.grid(row=0)
 
 class EffectsLoader(object):
     """ singleton """

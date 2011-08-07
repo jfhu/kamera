@@ -11,5 +11,5 @@ class KameraEffectBase(object):
         raise NotImplementedError
     
     @abc.abstractmethod
-    def process_image(self, image):
+    def process_image(self, image, options):
         raise NotImplementedError

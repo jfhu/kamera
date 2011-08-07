@@ -4,6 +4,7 @@ import ImageTk
 import numpy
 import Tkinter as Tk
 import inspect
+import sys
 
 CAMERAINDEX = 1
 
@@ -24,6 +25,7 @@ class Kamera:
     # TODO: remove this
     def _test_use_black_white_effect(self):
         self.effects_loader.set_effect('BlackWhiteEffect')
+        self.effects_loader.set_option('any_option', 'any_value')
     
     def __init__(self):
         self.effects_loader = EffectsLoader()
@@ -36,7 +38,12 @@ class Kamera:
     def run(self):
         self.window.mainloop()
     
+    def exit(self, *args):
+        sys.exit(0)
+    
     def init_gui(self):
+        # bind esc for quitting
+        self.window.bind('<Escape>', self.exit)
         self.video = VideoLabel(self.window)
         self.video.grid(row=0, columnspan=3)
         
@@ -115,8 +122,10 @@ class EffectsLoader(object):
     """ singleton """
     _instance = None
     
+    # TODO: make this list of effects
     effects_list = {}
     current_effect = None
+    options = {}
     
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -138,6 +147,22 @@ class EffectsLoader(object):
     
     def set_effect(cls, effect_name):
         cls._instance.current_effect = cls._instance.effects_list[effect_name]
+        cls._instance.clear_options()
+
+    def set_option(cls, key, value):
+        cls._instance.options[key] = value
+    
+    def get_option(cls, key):
+        return cls._instance.options[key]
+    
+    def get_options(cls):
+        return cls._instance.options
+    
+    def clear_option(cls, key):
+        cls._instance.options[key] = None
+        
+    def clear_options(cls):
+        cls._instance.options = {}
 
 
 class VideoLabel(Tk.Label):
@@ -163,7 +188,7 @@ class VideoLabel(Tk.Label):
         # Apply effects here?
         current_effect_class = self.effects_loader.get_current_effect()
         if current_effect_class is not None:
-            pil_frame = current_effect_class().process_image(pil_frame)
+            pil_frame = current_effect_class().process_image(pil_frame, self.effects_loader.get_options())
         self.photo_image = ImageTk.PhotoImage(pil_frame)
         
     def update(self):

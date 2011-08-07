@@ -27,7 +27,6 @@ class Kamera:
     # Creates a tooptip box for a widget.
     def createToolTip(self, widget, text ):
         def enter( event ):
-            x = y = 0
             if self.tipwindow or not text:
                 return
             x, y, cx, cy = widget.bbox( "insert" )
@@ -44,10 +43,9 @@ class Kamera:
             label.grid( ipadx = 1 )
         
         def close( event ):
-            tw = self.tipwindow
-            tipwindow = None
-            if tw:
-                tw.destroy()
+            if self.tipwindow:
+                self.tipwindow.destroy()
+            self.tipwindow = None
             
         widget.bind( "<Enter>", enter )
         widget.bind( "<Leave>", close )
@@ -72,6 +70,9 @@ class Kamera:
         sys.exit(0)
     
     def init_gui(self):
+        # no resize on window
+        self.window.resizable(width=False, height=False)
+        
         # bind esc for quitting
         self.window.bind('<Escape>', self.exit)
         self.video = VideoLabel(self.window)

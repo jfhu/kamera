@@ -133,7 +133,7 @@ class Kamera:
         self.options['decoration'] = Tk.OptionMenu(self.window, self.str_var_g, 'None', 'Elephant', 'Giraffe', 'Goat', 'Balloons', 'Kiss', 'Plumber', 'Mushroom', 'Star', 'Shining Star', 'Heart')
         self.options['decoration'].grid(row=6,column=0, sticky=N+E+W+S,padx=15)
         self.createToolTip(self.options['decoration'],'Choose from a variety of items to add')
-        self.buttons['remove'] = Tk.Button(self.window, command=self.event_paste, text='Remove')
+        self.buttons['remove'] = Tk.Button(self.window, command=self.event_remove, text='Remove')
         self.buttons['remove'].grid(row=7,column=0,sticky=N+E+W+S,padx=15)
         self.createToolTip(self.buttons['remove'],'Click to remove all decorations')
 
@@ -198,6 +198,9 @@ class Kamera:
             #'Mustache' = mustache.png
             #'Beard'    = beard.png
             #'Kiss'     = kiss.png
+
+    def event_remove(self):
+        pass
 
     def event_clicked(self, event):
         if self.str_var_g.get() != "None":

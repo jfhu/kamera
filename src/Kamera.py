@@ -6,6 +6,7 @@ import Tkinter as Tk
 from Tkinter import N, E, W, S
 import inspect
 import sys
+import tkFileDialog
 
 CAMERAINDEX = 1
 
@@ -81,114 +82,111 @@ class Kamera:
         self.window.bind('<Escape>', self.exit)
         self.video = VideoLabel(self.window)
         self.video.grid(row=0, columnspan=3)
-        
-        str_var_a = Tk.StringVar()
-        str_var_a.set('Original')
-        str_var_b = Tk.StringVar()
-        str_var_b.set('No Mirror')
-        str_var_c = Tk.StringVar()
-        str_var_c.set('None')
-        str_var_d = Tk.StringVar()
-        str_var_d.set('None')
-        str_var_e = Tk.StringVar()
-        str_var_e.set('None')
-        str_var_f = Tk.StringVar()
-        str_var_f.set('None')
 
-        self.labels['Background'] = Tk.Label(self.window, text='Background', font=("16")).grid(row=1,padx=5)
+        # bind mouse click for pasting
+        self.video.bind("<Button-1>", self.event_clicked)
+        
+        # Color effects variable
+        self.str_var_a = Tk.StringVar()
+        self.str_var_a.set('Original')
+        # Mirror effects
+        self.str_var_b = Tk.StringVar()
+        self.str_var_b.set('No Mirror')
+        # Face detection objects
+        self.str_var_c = Tk.StringVar()
+        self.str_var_c.set('None')
+        self.str_var_d = Tk.StringVar()
+        self.str_var_d.set('None')
+        self.str_var_e = Tk.StringVar()
+        self.str_var_e.set('None')
+        self.str_var_f = Tk.StringVar()
+        self.str_var_f.set('None')
+        # Decoration objects
+        self.str_var_g = Tk.StringVar()
+        self.str_var_g.set('None')
+
+        # Background Menu items
+        self.labels['Background'] = Tk.Label(self.window, text='Background', font=("Impact","16")).grid(row=1,padx=5)
         self.buttons['import'] = Tk.Button(self.window, command=self.event_import, text='Import')
-        self.buttons['import'].grid(row=2, sticky=N+E+W+S)
+        self.buttons['import'].grid(row=2, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.buttons['import'],'Import background from an image file')
         self.buttons['reference'] = Tk.Button(self.window, command=self.event_reference, text='Reference')
-        self.buttons['reference'].grid(row=3, sticky=N+E+W+S)
+        self.buttons['reference'].grid(row=3, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.buttons['reference'],'Step outside of the frame and take a picture of the background')
         self.buttons['disable'] = Tk.Button(self.window, command=self.event_disable, text='Disable')
-        self.buttons['disable'].grid(row=4, sticky=N+E+W+S)
+        self.buttons['disable'].grid(row=4, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.buttons['disable'],'Restore the real background')
 
-        self.labels['Effects'] = Tk.Label(self.window, text='Effects', font=("16")).grid(row=1,column=2,padx=5)
+        # Effects Menu items
+        self.labels['Effects'] = Tk.Label(self.window, text='Effects', font=("Impact","16")).grid(row=1,column=2,padx=5)
         self.labels['color'] = Tk.Label(self.window, text='Change Color:').grid(row=2, column=1, sticky=E)
         self.labels['mirror'] = Tk.Label(self.window, text='Mirror:').grid(row=3, column=1, sticky=E)
-        self.options['effects1'] = Tk.OptionMenu(self.window, str_var_a, 'Original', 'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R')
-        self.options['effects1'].grid(row=2,column=2, sticky=N+E+W+S)
+        self.options['effects1'] = Tk.OptionMenu(self.window, self.str_var_a, 'Original', 'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R')
+        self.options['effects1'].grid(row=2,column=2, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.options['effects1'],'Remove, Swap, or Cycle colors')
-        self.options['effects2'] = Tk.OptionMenu(self.window, str_var_b, 'No Mirror', 'Vertical', 'Horizontal')
-        self.options['effects2'].grid(row=3,column=2, sticky=N+E+W+S)
+        self.options['effects2'] = Tk.OptionMenu(self.window, self.str_var_b, 'No Mirror', 'Vertical', 'Horizontal')
+        self.options['effects2'].grid(row=3,column=2, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.options['effects2'],'Reflect through the middle')
-        # self.buttons['apply1'] = Tk.Button(self.window, command=self.event_save, text='Apply')
-        # self.buttons['apply1'].grid(row=4,column=2,sticky=N+E+W+S)
-        # self.createToolTip(self.buttons['apply1'],'Apply the selected effects')
 
-        self.labels['decoration'] = Tk.Label(self.window, text='Decoration', font=("16")).grid(row=5,column=0,padx=5)
-        self.buttons['heart'] = Tk.Button(self.window, command=self.event_heart, text='Heart')
-        self.buttons['heart'].grid(row=6,column=0,sticky=N+E+W+S)
-        self.createToolTip(self.buttons['heart'],'Left click to add hearts, Right click to stop')
-        self.buttons['star'] = Tk.Button(self.window, command=self.event_star, text='Star')
-        self.buttons['star'].grid(row=7,column=0,sticky=N+E+W+S)
-        self.createToolTip(self.buttons['star'],'Left click to add stars, Right click to stop')
-        self.buttons['circle'] = Tk.Button(self.window, command=self.event_circle, text='Circle')
-        self.buttons['circle'].grid(row=8,column=0,sticky=N+E+W+S)
-        self.createToolTip(self.buttons['circle'],'Left click to add circles, Right click to stop')
+        # Decoration Menu items
+        self.labels['decoration'] = Tk.Label(self.window, text='Decoration', font=("Impact","16")).grid(row=5,column=0,padx=5)
+        self.options['decoration'] = Tk.OptionMenu(self.window, self.str_var_g, 'None', 'Elephant', 'Giraffe', 'Goat', 'Balloons', 'Kiss', 'Plumber', 'Mushroom', 'Star', 'Shining Star', 'Heart')
+        self.options['decoration'].grid(row=6,column=0, sticky=N+E+W+S,padx=5)
+        self.createToolTip(self.options['decoration'],'Choose from a variety of items to add')
 
-        self.labels['facedetect'] = Tk.Label(self.window, text='Face Detection', font=("16")).grid(row=4,column=2,columnspan=2,padx=5)
+        # Face Detection Menu items
+        self.labels['facedetect'] = Tk.Label(self.window, text='Face Detection', font=("Impact","16")).grid(row=4,column=2,columnspan=2,padx=5)
         self.labels['hair'] = Tk.Label(self.window, text='Hair:').grid(row=5,column=1, sticky=E)
         self.labels['eyes'] = Tk.Label(self.window, text='Eyes:').grid(row=6,column=1, sticky=E)
         self.labels['nose'] = Tk.Label(self.window, text='Nose:').grid(row=7,column=1, sticky=E)
         self.labels['mouth'] = Tk.Label(self.window, text='Mouth:').grid(row=8,column=1, sticky=E)
-        self.options['face1'] = Tk.OptionMenu(self.window, str_var_c, 'None')
-        self.options['face1'].grid(row=5,column=2, sticky=N+E+W+S)
+        self.options['face1'] = Tk.OptionMenu(self.window, self.str_var_c, 'None')
+        self.options['face1'].grid(row=5,column=2, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.options['face1'],'Wear hats and wigs')
-        self.options['face2'] = Tk.OptionMenu(self.window, str_var_d, 'None')
-        self.options['face2'].grid(row=6,column=2, sticky=N+E+W+S)
+        self.options['face2'] = Tk.OptionMenu(self.window, self.str_var_d, 'None')
+        self.options['face2'].grid(row=6,column=2, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.options['face2'],'Wear glasses')
-        self.options['face3'] = Tk.OptionMenu(self.window, str_var_e, 'None')
-        self.options['face3'].grid(row=7,column=2, sticky=N+E+W+S)
+        self.options['face3'] = Tk.OptionMenu(self.window, self.str_var_e, 'None')
+        self.options['face3'].grid(row=7,column=2, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.options['face3'],'Add a mustache')
-        self.options['face4'] = Tk.OptionMenu(self.window, str_var_f, 'None')
-        self.options['face4'].grid(row=8,column=2, sticky=N+E+W+S)
+        self.options['face4'] = Tk.OptionMenu(self.window, self.str_var_f, 'None')
+        self.options['face4'].grid(row=8,column=2, sticky=N+E+W+S,padx=5)
         self.createToolTip(self.options['face4'],'Add a beard')
         self.buttons['apply'] = Tk.Button(self.window, command=self.event_save, text='Apply')
-        self.buttons['apply'].grid(row=10,column=0,sticky=N+E+W+S,pady=10)
+        self.buttons['apply'].grid(row=10,column=2,sticky=N+E+W+S,padx=5,pady=10)
         self.createToolTip(self.buttons['apply'],'Apply the selected effects')
 
-        # self.labels['Save'] = Tk.Label(self.window, text='Save', font=("16")).grid(row=1,column=7,padx=5)
+        # Screenshot Button
         self.buttons['screenshot'] = Tk.Button(self.window, command=self.event_screenshot, text='Screenshot')
-        self.buttons['screenshot'].grid(row=10, column=1, sticky=N+E+W+S, pady=10)
+        self.buttons['screenshot'].grid(row=10, sticky=N+E+W+S, pady=10)
         self.createToolTip(self.buttons['screenshot'],'Save a screenshot')
-        self.buttons['record'] = Tk.Button(self.window, command=self.event_record, text='Record')
-        self.buttons['record'].grid(row=10, column=2, sticky=N+E+W+S, pady=10)
-        self.createToolTip(self.buttons['record'],'Start a recording')
     
+    #import an image and store it as the virtual background
     def event_import(self):
-        print 'import bg'
-
+        filename = tkFileDialog.askopenfilename(title='Import Background Image',filetypes=[('Images', ('.jpg','.gif','.png')),('all files', '.*')])
+        if filename != "":
+            self.imp = Image.open(filename)
+        
+    #take a snapshot of the current background for effect Background
     def event_reference(self):
-        print 'take reference photo'
+        self.bg = self.video.getBackground()
 
     def event_disable(self):
         print 'restore real background'
 
     def event_screenshot(self):
-        print 'screenshot saved'
-    
-    def event_record(self):
-        print 'recording started'    
+        filename = tkFileDialog.asksaveasfilename(title='Save Screenshot Image')
+	self.video.getImage().save(filename,"JPEG")
+	
     
     def event_save(self):
         pass
         # print str_var_a.get(), str_var_b.get()
-
-    # def event_save2(self):
     #     print str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get()
     
-    def event_heart(self):
-        print 'add hearts'
-
-    def event_star(self):
-        print 'add stars'
-
-    def event_circle(self):
-        print 'add circles'
+    def event_clicked(self, event):
+        if self.str_var_g.get() != "None":
+            print 'paste ', self.str_var_g.get(), ' at ', event.x, event.y
 
 class EffectsLoader(object):
     """ singleton """
@@ -265,6 +263,17 @@ class VideoLabel(Tk.Label):
             else:
                  pil_frame = current_effect_class().process_image(pil_frame, self.effects_loader.get_options())
         self.photo_image = ImageTk.PhotoImage(pil_frame)
+        return pil_frame
+        
+    def getBackground(self):
+        frame_raw = cv.QueryFrame(self.capture)
+        frame = cv.CreateImage(cv.GetSize(frame_raw), 8, 3)
+        cv.CvtColor(frame_raw, frame, cv.CV_BGR2RGB)
+        pil_frame = Image.fromstring("RGB", cv.GetSize(frame), frame.tostring())
+        data = numpy.asarray(pil_frame)
+        data = numpy.fliplr(data)
+        pil_frame = Image.fromarray(data)
+        return pil_frame
         
     def update(self):
         self.getImage()

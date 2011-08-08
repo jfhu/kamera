@@ -50,18 +50,22 @@ class Kamera:
         widget.bind( "<Enter>", enter )
         widget.bind( "<Leave>", close )
 
-    # TODO: remove this
-    ##def _test_use_black_white_effect(self):
-        ##self.effects_loader.set_effect('BlackWhiteEffect')
-        ##self.effects_loader.set_option('any_option', 'any_value')
+
+    def _test_use_black_white_effect(self):
+        # self.effects_loader.set_effect('BlackWhiteEffect')
+        # self.effects_loader.set_effect('Decoration')
+        # self.effects_loader.set_effect('StaticDec')
+        # self.effects_loader.set_effect('DynamicDec')
+        # self.effects_loader.set_effect('Other')
+        self.effects_loader.set_effect('Background')
+        self.effects_loader.set_option('any_option', 'any_value')
     
     def __init__(self):
         self.effects_loader = EffectsLoader()
         self.effects_loader.load_effects()
         self.window = Tk.Tk()
         self.init_gui()
-        # TODO: remove this
-        ##self._test_use_black_white_effect()
+        self._test_use_black_white_effect()
     
     def run(self):
         self.window.mainloop()
@@ -256,7 +260,10 @@ class VideoLabel(Tk.Label):
         # Apply effects here?
         current_effect_class = self.effects_loader.get_current_effect()
         if current_effect_class is not None:
-            pil_frame = current_effect_class().process_image(pil_frame, self.effects_loader.get_options())
+            if current_effect_class().get_name() == "DynamicDecoration":
+                pil_frame = current_effect_class().process_image(frame_raw, self.effects_loader.get_options())
+            else:
+                 pil_frame = current_effect_class().process_image(pil_frame, self.effects_loader.get_options())
         self.photo_image = ImageTk.PhotoImage(pil_frame)
         
     def update(self):

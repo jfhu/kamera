@@ -1,40 +1,33 @@
 #!/usr/bin/env python
+from KameraEffectBase import *
 
-from PIL import Image
+import Image
 
-class Other(Effect):
-    DISABLE = 'None'
-    MV = "sth"
-    MH = "sthelse"
+import ImageFilter
+
+
+class Other(KameraEffectBase):
+
+    def get_name(cls):
+        return "Color & Flip"
     
-    def __init__():
-        self.edict = {'color': DISABLE, 'mirror': DISABLE}
-        
-    def seteffect(self, cmode, mmode):
-        if cmode == 'original'
-            self.edict['color'] = DISABLED
-        else:
-            self.edict['color'] = cmode
-        self.edict['mirror'] = mmode
-        if self.edict['color'] == DISABLED and self.edict['mirror'] = DISABLED:
-            self.enable = False
-        else:
-            self.enable = True
-        
-    def apply(self, img):
-        img = color(img, self.edict['color'])
-        img = mirror_wrapper(img, self.edict['mirror'])
-        return img
+    def get_description(cls):
+        return "This is miscellaneous effect"
+    
+    def process_image(cls, image, options):
+        # image = cls.mirror_wrapper(image, 'verticle')
+        image = cls.color(image, 'redonly')
+        return image
 
-    def mirror_wrapper(img, mode):
-        if mode == self.DISABLE:
+    def mirror_wrapper(cls, img, mode):
+        if mode == None:
             return img
-        if mode == MV:
-            return mirror_v(img)
-        else
-            return mirror_h(img)
+        if mode == "verticle":
+            return cls.mirror_v(img)
+        else:
+            return cls.mirror_h(img)
         
-    def mirror_v(img):
+    def mirror_v(cls, img):
         mirror = img.copy()
         width, height = img.size
         for row in range(height):
@@ -43,7 +36,7 @@ class Other(Effect):
                 mirror.putpixel((width - col - 1, row), (r, g , b))
         return mirror
 
-    def mirror_h(img):
+    def mirror_h(cls, img):
         mirror = img.copy()
         width, height = img.size
         for row in range(height/2):
@@ -52,8 +45,8 @@ class Other(Effect):
                 mirror.putpixel((col, height - row - 1), (r, g , b))
         return mirror
         
-    def color(img, mode):
-        if mode == self.DISABLE:
+    def color(cls, img, mode):
+        if mode == None:
             return img
         cycle = img.copy()
         width, height = img.size
@@ -63,21 +56,21 @@ class Other(Effect):
                 if mode == 'blackwhite':
                     black = (r + b + g) /3
                     cycle.putpixel((col, row), (black, black , black))
-                else if mode == 'redonly':
+                elif mode == 'redonly':
                     cycle.putpixel((col, row), (r, 0 , 0))
-                else if mode == 'blueonly':
+                elif mode == 'blueonly':
                     cycle.putpixel((col, row), (0, 0 , b))
-                else if mode == 'greenonly':
+                elif mode == 'greenonly':
                     cycle.putpixel((col, row), (0, g , 0))
-                else if mode == 'rb':
+                elif mode == 'rb':
                     cycle.putpixel((col, row), (r, 0, b))
-                else if mode == 'rg':
+                elif mode == 'rg':
                     cycle.putpixel((col, row), (r, g, b))
-                else if mode == 'bg':
+                elif mode == 'bg':
                     cycle.putpixel((col, row), (0, g , b))
-                else if mode == 'rgbr':
+                elif mode == 'rgbr':
                     cycle.putpixel((col, row), (b, r, g))
-                else if mode == 'rbrg':
+                elif mode == 'rbrg':
                     cycle.putpixel((col, row), (g, b , r))
         return cycle
         

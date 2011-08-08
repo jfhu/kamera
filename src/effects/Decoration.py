@@ -19,7 +19,10 @@ class Decoration(KameraEffectBase):
         return image
         
     def addImage(cls, image, dec, p):
-        image.paste(dec, p, dec)
+        cls.addImageMask(image, dec, p, dec)
+
+    def addImageMask(cls, image, dec, p, mask):
+        image.paste(dec, p, mask)
         return image
         
         

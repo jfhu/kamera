@@ -191,8 +191,12 @@ class Kamera:
         pass
         # str_var_a.get() for color effects
             #'Original', 'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R'
+        color = str_var_a.get()
+        self.effects_loader.set_option('Other', 'color', color)
         # str_var_b.get() for mirror effects
             #'No Mirror', 'Vertical', 'Horizontal'
+        mirror = str_var_b.get()
+        self.effects_loader.set_option('Other', 'mirror', Mirror)
         # str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get() for face items
             #'None'
             #'Tiara'    = crown.png
@@ -203,9 +207,15 @@ class Kamera:
             #'Mustache' = mustache.png
             #'Beard'    = beard.png
             #'Kiss'     = kiss.png
+        hair = str_var_c.get()
+        eye = str_var_d.get()
+        nose = str_var_e.get()
+        mouth = str_var_f.get()
+        dec = [hair, eye, nose, mouse]
+        self.effects_loader.set_option('Dynamic', 'decoration', dec)
 
     def event_remove(self):
-        pass
+        self.effects_loader.set_option('StaticDec', 'positions', [])
 
     def event_clicked(self, event):
         if self.str_var_g.get() != "None":

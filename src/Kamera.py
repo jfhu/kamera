@@ -166,12 +166,17 @@ class Kamera:
         filename = tkFileDialog.askopenfilename(title='Import Background Image',filetypes=[('Images', ('.jpg','.gif','.png')),('all files', '.*')])
         if filename != "":
             self.imp = Image.open(filename)
+            self.effects_loader.set_option('Background', 'bgNew', self.imp)
+            
         
     #take a snapshot of the current background for effect Background
     def event_reference(self):
         self.bg = self.video.getBackground()
+        self.effects_loader.set_option('Background', 'bg', self.bg)
 
     def event_disable(self):
+        self.effects_loader.set_option('Background', 'bg', None)
+        self.effects_loader.set_option('Background', 'bgNew', None)
         print 'restore real background'
 
     def event_screenshot(self):

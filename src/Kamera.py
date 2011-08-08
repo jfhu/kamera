@@ -65,6 +65,7 @@ class Kamera:
         self.effects_loader.load_effects()
         self.window = Tk.Tk()
         self.init_gui()
+        self.event_apply()
         self._test_use_black_white_effect()
         
     def run(self):
@@ -155,8 +156,6 @@ class Kamera:
         self.options['face4'].grid(row=8,column=2, sticky=N+E+W+S,padx=15)
         self.createToolTip(self.options['face4'],'Add a beard')
         self.buttons['apply'] = Tk.Button(self.window, command=self.event_apply, text='Apply')
-        self.buttons['apply'].grid(row=10,column=2,sticky=N+E+W+S,padx=15,pady=10)
-        self.createToolTip(self.buttons['apply'],'Apply the selected effects')
 
         # Screenshot Button
         self.buttons['screenshot'] = Tk.Button(self.window, command=self.event_screenshot, text='Screenshot')
@@ -228,6 +227,7 @@ class Kamera:
             self.effects_loader.enable_effect('DynamicDec')
         else:
             self.effects_loader.disable_effect('DynamicDec')
+        self.buttons['apply'].after(100, self.event_apply)
 
     def event_remove(self):
         self.effects_loader.set_option('StaticDec', 'positions', [])

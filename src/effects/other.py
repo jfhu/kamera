@@ -41,37 +41,52 @@ class Other(KameraEffectBase):
         return img
     
     def process_color(cls, img, mode):
+        """
+        'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R'
+        """
+        arr = numpy.asarray(img)
+        arr = numpy.copy(arr)
+        if mode == 'Black/White':
+            img = img.convert("L")
+        elif mode == 'Red Only':
+            arr[:, :, 1:3] = 0
+            img = Image.fromarray(arr)
+        elif mode == 'Green Only':
+            arr[:, :, 0] = 0
+            arr[:, :, 2] = 0
+            img = Image.fromarray(arr)
+        elif mode == 'Blue Only':
+            arr[:, :, 0:2] = 0
+            img = Image.fromarray(arr)
+        elif mode == 'R<->B':
+            tmp = numpy.copy(arr[:,:,0])
+            arr[:,:,0] = arr[:,:,1]
+            arr[:,:,1] = tmp
+            img = Image.fromarray(arr)
+        elif mode == 'R<->G':
+            tmp = numpy.copy(arr[:,:,0])
+            arr[:,:,0] = arr[:,:,2]
+            arr[:,:,2] = tmp
+            img = Image.fromarray(arr)
+        elif mode == 'B<->G':
+            tmp = numpy.copy(arr[:,:,1])
+            arr[:,:,1] = arr[:,:,2]
+            arr[:,:,2] = tmp
+            img = Image.fromarray(arr)
+        elif mode == 'R->G->B->R':
+            tmp = numpy.copy(arr[:,:,2])
+            arr[:,:,2] = arr[:,:,1]
+            arr[:,:,1] = arr[:,:,0]
+            arr[:,:,0] = tmp
+            img = Image.fromarray(arr)
+        elif mode == 'R->B->G->R':
+            tmp = numpy.copy(arr[:,:,0])
+            arr[:,:,0] = arr[:,:,1]
+            arr[:,:,1] = arr[:,:,2]
+            arr[:,:,2] = tmp
+            img = Image.fromarray(arr)
         return img
-
-    def color(cls, img, mode):
-        if mode == None:
-            return img
-        cycle = img.copy()
-        width, height = img.size
-        for row in range(height):
-            for col in range(width):
-                (r, g, b) = img.getpixel((col, row))
-                if mode == 'blackwhite':
-                    black = (r + b + g) /3
-                    cycle.putpixel((col, row), (black, black , black))
-                elif mode == 'redonly':
-                    cycle.putpixel((col, row), (r, 0 , 0))
-                elif mode == 'blueonly':
-                    cycle.putpixel((col, row), (0, 0 , b))
-                elif mode == 'greenonly':
-                    cycle.putpixel((col, row), (0, g , 0))
-                elif mode == 'rb':
-                    cycle.putpixel((col, row), (r, 0, b))
-                elif mode == 'rg':
-                    cycle.putpixel((col, row), (r, g, b))
-                elif mode == 'bg':
-                    cycle.putpixel((col, row), (0, g , b))
-                elif mode == 'rgbr':
-                    cycle.putpixel((col, row), (b, r, g))
-                elif mode == 'rbrg':
-                    cycle.putpixel((col, row), (g, b , r))
-        return cycle
-        
+    
 if __name__ == "__main__":
     img = Image.open("room2.jpg")
     img_flipped = mirror_v(img)

@@ -55,10 +55,10 @@ class Kamera:
     def _test_use_black_white_effect(self):
         # self.effects_loader.set_effect('BlackWhiteEffect')
         # self.effects_loader.set_effect('Decoration')
-        # self.effects_loader.set_effect('StaticDec')
+        self.effects_loader.set_effect('StaticDec')
         # self.effects_loader.set_effect('DynamicDec')
         # self.effects_loader.set_effect('Other')
-        self.effects_loader.set_effect('Background')
+        # self.effects_loader.set_effect('Background')
         self.effects_loader.set_option('any_option', 'any_value')
     
     def __init__(self):

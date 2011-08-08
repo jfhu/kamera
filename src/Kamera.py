@@ -140,16 +140,16 @@ class Kamera:
         self.labels['eyes'] = Tk.Label(self.window, text='Eyes:').grid(row=6,column=1, sticky=E)
         self.labels['nose'] = Tk.Label(self.window, text='Nose:').grid(row=7,column=1, sticky=E)
         self.labels['mouth'] = Tk.Label(self.window, text='Mouth:').grid(row=8,column=1, sticky=E)
-        self.options['face1'] = Tk.OptionMenu(self.window, self.str_var_c, 'None')
+        self.options['face1'] = Tk.OptionMenu(self.window, self.str_var_c, 'None', 'Tiara', 'Crown')
         self.options['face1'].grid(row=5,column=2, sticky=N+E+W+S,padx=15)
-        self.createToolTip(self.options['face1'],'Wear hats and wigs')
-        self.options['face2'] = Tk.OptionMenu(self.window, self.str_var_d, 'None')
+        self.createToolTip(self.options['face1'],'Wear hats')
+        self.options['face2'] = Tk.OptionMenu(self.window, self.str_var_d, 'None', 'Big Eyes', 'Glasses', 'Goggles')
         self.options['face2'].grid(row=6,column=2, sticky=N+E+W+S,padx=15)
         self.createToolTip(self.options['face2'],'Wear glasses')
-        self.options['face3'] = Tk.OptionMenu(self.window, self.str_var_e, 'None')
+        self.options['face3'] = Tk.OptionMenu(self.window, self.str_var_e, 'None', 'Mustache')
         self.options['face3'].grid(row=7,column=2, sticky=N+E+W+S,padx=15)
         self.createToolTip(self.options['face3'],'Add a mustache')
-        self.options['face4'] = Tk.OptionMenu(self.window, self.str_var_f, 'None')
+        self.options['face4'] = Tk.OptionMenu(self.window, self.str_var_f, 'None', 'Beard', 'Kiss')
         self.options['face4'].grid(row=8,column=2, sticky=N+E+W+S,padx=15)
         self.createToolTip(self.options['face4'],'Add a beard')
         self.buttons['apply'] = Tk.Button(self.window, command=self.event_save, text='Apply')
@@ -181,12 +181,35 @@ class Kamera:
     
     def event_save(self):
         pass
-        # print str_var_a.get(), str_var_b.get()
-    #     print str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get()
-    
+        # str_var_a.get() for color effects
+            #'Original', 'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R'
+        # str_var_b.get() for mirror effects
+            #'No Mirror', 'Vertical', 'Horizontal'
+        # str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get() for face items
+            #'None'
+            #'Tiara'    = crown.png
+            #'Crown'    = bigcrown.png
+            #'Big Eyes' = eye.png
+            #'Glasses'  = glasses.png
+            #'Goggles'  = goggle.png
+            #'Mustache' = mustache.png
+            #'Beard'    = beard.png
+            #'Kiss'     = kiss.png
+
     def event_clicked(self, event):
         if self.str_var_g.get() != "None":
             print 'paste ', self.str_var_g.get(), ' at ', event.x, event.y
+                #'None'
+                #'Elephant'     = elephant.png
+                #'Giraffe'      = giraffe.png
+                #'Goat'         = goat.png
+                #'Balloons'     = heart_balloons.png
+                #'Kiss'         = kiss.png
+                #'Plumber'      = mario.png
+                #'Mushroom'     = Mushroom.png
+                #'Star'         = star.png
+                #'Shining Star' = PowerStar.png
+                #'Heart'        = red_heart.png
 
 class EffectsLoader(object):
     """ singleton """

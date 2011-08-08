@@ -56,10 +56,7 @@ class Kamera:
     def _test_use_black_white_effect(self):
         # self.effects_loader.set_effect('BlackWhiteEffect')
         # self.effects_loader.set_effect('Decoration')
-        # self.effects_loader.enable_effect('StaticDec')
-        # self.effects_loader.set_option('StaticDec', 'positions', [])
-        self.effects_loader.enable_effect('DynamicDec')
-        self.effects_loader.set_option('DynamicDec', 'decoration', ['None', 'None', 'None', 'None'])
+        pass
         # self.effects_loader.set_effect('Other')
         # self.effects_loader.set_effect('Background')
     
@@ -157,7 +154,7 @@ class Kamera:
         self.options['face4'] = Tk.OptionMenu(self.window, self.str_var_f, 'None', 'Beard', 'Kiss')
         self.options['face4'].grid(row=8,column=2, sticky=N+E+W+S,padx=15)
         self.createToolTip(self.options['face4'],'Add a beard')
-        self.buttons['apply'] = Tk.Button(self.window, command=self.event_save, text='Apply')
+        self.buttons['apply'] = Tk.Button(self.window, command=self.event_apply, text='Apply')
         self.buttons['apply'].grid(row=10,column=2,sticky=N+E+W+S,padx=15,pady=10)
         self.createToolTip(self.buttons['apply'],'Apply the selected effects')
 
@@ -197,7 +194,7 @@ class Kamera:
             self.video.pil_image.save(filename,"JPEG")
         update_lock = False
     
-    def event_save(self):
+    def event_apply(self):
         pass
         # str_var_a.get() for color effects
             #'Original', 'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R'
@@ -223,6 +220,12 @@ class Kamera:
         mouth = self.str_var_f.get()
         dec = [hair, eye, nose, mouth]
         self.effects_loader.set_option('DynamicDec', 'decoration', dec)
+        # self.effects_loader.enable_effect('StaticDec')
+        # self.effects_loader.set_option('StaticDec', 'positions', [])
+        if hair or eye or nose or mouth:
+            self.effects_loader.enable_effect('DynamicDec')
+        else:
+            self.effects_loader.disable_effect('DynamicDec')
 
     def event_remove(self):
         self.effects_loader.set_option('StaticDec', 'positions', [])
@@ -232,6 +235,9 @@ class Kamera:
             positions = self.effects_loader.get_option('StaticDec', 'positions', default = [])
             positions.append({'name':self.str_var_g.get(), 'position':(event.x, event.y)})
             self.effects_loader.set_option('StaticDec', 'positions', positions)
+            self.effects_loader.enable_effect('StaticDec')
+        else:
+            self.effects_loader.disable_effect('StaticDec')
                 #'None'
                 #'Elephant'     = elephant.png
                 #'Giraffe'      = giraffe.png
@@ -258,6 +264,7 @@ class EffectsLoader(object):
         option : another dict with key-value pairs
     """
     effects_dict = {}
+    sorted_list = []
     
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -273,10 +280,19 @@ class EffectsLoader(object):
                 e['enabled'] = False
                 e['option'] = {}
                 cls._instance.effects_dict[name] = e
-        print 'Loaded effects:', ", ".join(cls._instance.effects_dict.keys())
+                # dynamic should be the first effect because it uses the raw frame
+                # should find a way to convert cv.iplimage -> Image
+                if name == 'DynamicDec':
+                    cls._instance.sorted_list.insert(0, name)
+                else:
+                    cls._instance.sorted_list.append(name)
+        print 'Loaded effects:', ", ".join(cls._instance.sorted_list)
     
     def get_enabled_effects(cls):
-        return [i for i in cls._instance.effects_dict.values() if i['enabled'] is True]
+        return [cls._instance.effects_dict[i] for i in cls._instance.sorted_list if cls.is_enabled(i)]
+
+    def is_enabled(cls, name):
+        return cls._instance.effects_dict[name]['enabled']
 
     def enable_effect(cls, name, should_enable = True):
         cls._instance.effects_dict[name]['enabled'] = should_enable
@@ -316,6 +332,7 @@ class VideoLabel(Tk.Label):
         data = numpy.asarray(pil_frame)
         data = numpy.fliplr(data)
         pil_frame = Image.fromarray(data)
+        print type(frame_raw), type(pil_frame)
         # Apply effects here?
         effects = self.effects_loader.get_enabled_effects()
         if effects:

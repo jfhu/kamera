@@ -191,11 +191,10 @@ class Kamera:
                 'initialfile' : 'snapshot.jpg',
         })
         if filename:
-            self.video.pil_image.save(filename,"JPEG")
+            self.video.pil_image.save(filename, 'JPEG', **{'quality':100})
         update_lock = False
     
     def event_apply(self):
-        pass
         # str_var_a.get() for color effects
             #'Original', 'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R'
         color = self.str_var_a.get()
@@ -204,6 +203,11 @@ class Kamera:
             #'No Mirror', 'Vertical', 'Horizontal'
         mirror = self.str_var_b.get()
         self.effects_loader.set_option('Other', 'mirror', mirror)
+        if color != 'Original' or mirror != 'No Mirror':
+            self.effects_loader.enable_effect('Other')
+        else:
+            self.effects_loader.disable_effect('Other')
+        
         # str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get() for face items
             #'None'
             #'Tiara'    = crown.png
@@ -220,8 +224,6 @@ class Kamera:
         mouth = self.str_var_f.get()
         dec = [hair, eye, nose, mouth]
         self.effects_loader.set_option('DynamicDec', 'decoration', dec)
-        # self.effects_loader.enable_effect('StaticDec')
-        # self.effects_loader.set_option('StaticDec', 'positions', [])
         if hair or eye or nose or mouth:
             self.effects_loader.enable_effect('DynamicDec')
         else:
@@ -332,7 +334,6 @@ class VideoLabel(Tk.Label):
         data = numpy.asarray(pil_frame)
         data = numpy.fliplr(data)
         pil_frame = Image.fromarray(data)
-        print type(frame_raw), type(pil_frame)
         # Apply effects here?
         effects = self.effects_loader.get_enabled_effects()
         if effects:

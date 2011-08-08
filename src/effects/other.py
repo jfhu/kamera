@@ -2,11 +2,12 @@
 from KameraEffectBase import *
 
 import Image
-
 import ImageFilter
-
+import numpy
 
 class Other(KameraEffectBase):
+    
+    options = {}
 
     def get_name(cls):
         return "Color & Flip"
@@ -15,26 +16,32 @@ class Other(KameraEffectBase):
         return "This is miscellaneous effect"
     
     def process_image(cls, image, options):
-        # image = cls.mirror_wrapper(image, 'verticle')
-        image = cls.color(image, 'redonly')
+        cls.options = options
+        if options['color']:
+            image = cls.process_color(image, options['color'])
+        if options['mirror']:
+            image = cls.process_mirror(image, options['mirror'])
         return image
 
-    def mirror_wrapper(cls, img, mode):
-        if mode == None:
-            return img
-        if mode == "verticle":
-            return cls.mirror_v(img)
-        else:
-            return cls.mirror_h(img)
-        
-    def mirror_v(cls, img):
-        mirror = img.copy()
-        width, height = img.size
-        for row in range(height):
-            for col in range(width/2):
-                (r, g, b) = img.getpixel((col, row))
-                mirror.putpixel((width - col - 1, row), (r, g , b))
-        return mirror
+    def process_mirror(cls, img, mode):
+        if mode == 'Vertical':
+            org = numpy.asarray(img)
+            flip = numpy.fliplr(org)
+            data1 = numpy.hsplit(org, 2)
+            data2 = numpy.hsplit(flip, 2)
+            data = numpy.hstack((data1[0], data2[1]))
+            img = Image.fromarray(data)
+        elif mode == 'Horizontal':
+            org = numpy.asarray(img)
+            flip = numpy.flipud(org)
+            data1 = numpy.vsplit(org, 2)
+            data2 = numpy.vsplit(flip, 2)
+            data = numpy.vstack((data1[0], data2[1]))
+            img = Image.fromarray(data)
+        return img
+    
+    def process_color(cls, img, mode):
+        return img
 
     def mirror_h(cls, img):
         mirror = img.copy()

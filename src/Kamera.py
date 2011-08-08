@@ -330,6 +330,7 @@ class VideoLabel(Tk.Label):
         data = numpy.asarray(pil_frame)
         data = numpy.fliplr(data)
         pil_frame = Image.fromarray(data)
+        self.pil_image = pil_frame
         # Apply effects here?
         effects = self.effects_loader.get_enabled_effects()
         if effects:
@@ -340,7 +341,6 @@ class VideoLabel(Tk.Label):
                 else:
                     pil_frame = e.process_image(pil_frame, effect['option'])
         self.photo_image = ImageTk.PhotoImage(pil_frame)
-        self.pil_image = pil_frame
         return pil_frame
         
     def update(self):

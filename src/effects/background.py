@@ -8,7 +8,7 @@ import ImageChops
 import numpy
 
 class Background(Decoration):
-    DIFF_THRESH = 15
+    DIFF_THRESH = 25
     
     mask_cache = None
     
@@ -48,7 +48,7 @@ class Background(Decoration):
         data = 255 * diff;
         mask = Image.fromarray(data.astype('int8'))
         mask = mask.convert("L")
-        mask = mask.filter(ImageFilter.MedianFilter(5))
+        mask = mask.filter(ImageFilter.MedianFilter(3))
         return mask
     
     # @classmethod

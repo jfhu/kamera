@@ -1,6 +1,7 @@
 import cv
 import Image
 import ImageTk
+import ImageFilter
 import numpy
 import Tkinter as Tk
 from Tkinter import N, E, W, S
@@ -52,13 +53,10 @@ class Kamera:
         widget.bind( "<Enter>", enter )
         widget.bind( "<Leave>", close )
 
-
     def _test_use_black_white_effect(self):
-        # self.effects_loader.set_effect('BlackWhiteEffect')
-        # self.effects_loader.set_effect('Decoration')
-        pass
-        # self.effects_loader.set_effect('Other')
-        # self.effects_loader.set_effect('Background')
+        self.effects_loader.enable_effect('Background')
+        self.effects_loader.set_option('Background', 'bg', None)
+        self.effects_loader.set_option('Background', 'bgNew', None)
     
     def __init__(self):
         self.effects_loader = EffectsLoader()
@@ -169,16 +167,14 @@ class Kamera:
             self.imp = Image.open(filename)
             self.effects_loader.set_option('Background', 'bgNew', self.imp)
             
-        
     #take a snapshot of the current background for effect Background
     def event_reference(self):
-        self.bg = self.video.getBackground()
+        self.bg = self.video.pil_image.filter(ImageFilter.BLUR)
         self.effects_loader.set_option('Background', 'bg', self.bg)
 
     def event_disable(self):
         self.effects_loader.set_option('Background', 'bg', None)
         self.effects_loader.set_option('Background', 'bgNew', None)
-        print 'restore real background'
 
     def event_screenshot(self):
         global update_lock
@@ -338,23 +334,13 @@ class VideoLabel(Tk.Label):
         effects = self.effects_loader.get_enabled_effects()
         if effects:
             for effect in effects:
-                e = effect['class']()
+                e = effect['class']
                 if e.get_name() == "DynamicDecoration":
                     pil_frame = e.process_image(frame_raw, effect['option'])
                 else:
                     pil_frame = e.process_image(pil_frame, effect['option'])
         self.photo_image = ImageTk.PhotoImage(pil_frame)
         self.pil_image = pil_frame
-        return pil_frame
-        
-    def getBackground(self):
-        frame_raw = cv.QueryFrame(self.capture)
-        frame = cv.CreateImage(cv.GetSize(frame_raw), 8, 3)
-        cv.CvtColor(frame_raw, frame, cv.CV_BGR2RGB)
-        pil_frame = Image.fromstring("RGB", cv.GetSize(frame), frame.tostring())
-        data = numpy.asarray(pil_frame)
-        data = numpy.fliplr(data)
-        pil_frame = Image.fromarray(data)
         return pil_frame
         
     def update(self):

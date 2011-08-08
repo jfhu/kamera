@@ -18,12 +18,16 @@ class DynamicDec(Decoration):
         'Beard'         : 'beard.png',
         'Kiss'          : 'kiss.png'
     }
+    
+    @classmethod
     def get_name(cls):
         return "DynamicDecoration"
     
+    @classmethod
     def get_description(cls):
         return "This is sample effect"
     
+    @classmethod
     def process_image(cls, image, options):
         frame = cv.CreateImage(cv.GetSize(image), 8, 3)
         cv.CvtColor(image, frame, cv.CV_BGR2RGB)
@@ -42,7 +46,8 @@ class DynamicDec(Decoration):
                     dec = Image.open(cls.path + cls.image_list[image])
                     pil_frame.paste( dec, (x, y), mask = dec)
         return pil_frame
-            
+    
+    @classmethod
     def detect_face(cls, image):
         image_size = cv.GetSize(image)
         cv.Flip(image, None, 1)

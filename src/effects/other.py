@@ -9,12 +9,15 @@ class Other(KameraEffectBase):
     
     options = {}
 
+    @classmethod
     def get_name(cls):
         return "Color & Flip"
-    
+
+    @classmethod
     def get_description(cls):
         return "This is miscellaneous effect"
     
+    @classmethod
     def process_image(cls, image, options):
         cls.options = options
         if options['color']:
@@ -23,6 +26,7 @@ class Other(KameraEffectBase):
             image = cls.process_mirror(image, options['mirror'])
         return image
 
+    @classmethod
     def process_mirror(cls, img, mode):
         if mode == 'Vertical':
             org = numpy.asarray(img)
@@ -40,6 +44,7 @@ class Other(KameraEffectBase):
             img = Image.fromarray(data)
         return img
     
+    @classmethod
     def process_color(cls, img, mode):
         """
         'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R'

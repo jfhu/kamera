@@ -23,12 +23,15 @@ class StaticDec(Decoration):
     
     image_cache = {}
      
+    @classmethod
     def get_name(cls):
         return "Static Decoration"
-    
+
+    @classmethod
     def get_description(cls):
         return "Add decoration image to video"
-    
+
+    @classmethod
     def process_image(cls, image, options):
         ret = image
         for pos in options['positions']:
@@ -41,7 +44,8 @@ class StaticDec(Decoration):
             cls.addImage(image, dec, (x, y))
         return image
     """
-        
+
+    @classmethod        
     def add_image(cls, image, dec_name, position):
         dec = cls.load_image(dec_name)
         # load the center of image at position
@@ -49,7 +53,8 @@ class StaticDec(Decoration):
         new_y = position[1] - dec.size[1]/2
         image.paste(dec, (new_x, new_y), mask = dec)
         return image
-    
+
+    @classmethod
     def load_image(cls, name):
         if name not in cls.image_cache.keys():
             cls.image_cache[name] = Image.open(cls.path + cls.image_list[name])

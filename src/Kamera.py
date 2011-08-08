@@ -9,6 +9,7 @@ import sys
 import tkFileDialog
 
 CAMERAINDEX = 1
+update_lock = False
 
 class Kamera:
     """
@@ -21,10 +22,10 @@ class Kamera:
     labels = {}
     buttons = {}
     video = None
-    
+
     effects_loader = None
     tipwindow = None
-
+    
     # Creates a tooptip box for a widget.
     def createToolTip(self, widget, text ):
         def enter( event ):
@@ -67,7 +68,7 @@ class Kamera:
         self.window = Tk.Tk()
         self.init_gui()
         self._test_use_black_white_effect()
-    
+        
     def run(self):
         self.window.mainloop()
     
@@ -183,9 +184,17 @@ class Kamera:
         print 'restore real background'
 
     def event_screenshot(self):
-        filename = tkFileDialog.asksaveasfilename(title='Save Screenshot Image')
-	self.video.getImage().save(filename,"JPEG")
-	
+        global update_lock
+        update_lock = True
+        filename = tkFileDialog.asksaveasfilename(**{
+                'title' : 'Save Screenshot Image',
+                'defaultextension' : 'jpg',
+                'filetypes' : [('JPEG images', '.jpg')],
+                'initialfile' : 'snapshot.jpg',
+        })
+        if filename:
+            self.video.pil_image.save(filename,"JPEG")
+        update_lock = False
     
     def event_save(self):
         pass
@@ -288,6 +297,7 @@ class EffectsLoader(object):
 class VideoLabel(Tk.Label):
     capture = None
     photo_image = None
+    pil_image = None
     effects_loader = None
     
     def __init__(self, *args, **kwarg):
@@ -315,6 +325,7 @@ class VideoLabel(Tk.Label):
                 else:
                     pil_frame = e.process_image(pil_frame, effect['option'])
         self.photo_image = ImageTk.PhotoImage(pil_frame)
+        self.pil_image = pil_frame
         return pil_frame
         
     def getBackground(self):
@@ -328,7 +339,9 @@ class VideoLabel(Tk.Label):
         return pil_frame
         
     def update(self):
-        self.getImage()
+        global update_lock
+        if not update_lock:
+            self.getImage()
         self.config(image = self.photo_image)
         self.grid()
         self.after(5, self.update)

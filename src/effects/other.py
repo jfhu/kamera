@@ -43,15 +43,6 @@ class Other(KameraEffectBase):
     def process_color(cls, img, mode):
         return img
 
-    def mirror_h(cls, img):
-        mirror = img.copy()
-        width, height = img.size
-        for row in range(height/2):
-            for col in range(width):
-                (r, g, b) = img.getpixel((col, row))
-                mirror.putpixel((col, height - row - 1), (r, g , b))
-        return mirror
-        
     def color(cls, img, mode):
         if mode == None:
             return img

@@ -55,11 +55,11 @@ class Kamera:
     def _test_use_black_white_effect(self):
         # self.effects_loader.set_effect('BlackWhiteEffect')
         # self.effects_loader.set_effect('Decoration')
-        self.effects_loader.set_effect('StaticDec')
+        self.effects_loader.enable_effect('StaticDec')
+        self.effects_loader.set_option('StaticDec', 'positions', [])
         # self.effects_loader.set_effect('DynamicDec')
         # self.effects_loader.set_effect('Other')
         # self.effects_loader.set_effect('Background')
-        self.effects_loader.set_option('any_option', 'any_value')
     
     def __init__(self):
         self.effects_loader = EffectsLoader()
@@ -198,7 +198,9 @@ class Kamera:
 
     def event_clicked(self, event):
         if self.str_var_g.get() != "None":
-            print 'paste ', self.str_var_g.get(), ' at ', event.x, event.y
+            positions = self.effects_loader.get_option('StaticDec', 'positions', default = [])
+            positions.append({'name':self.str_var_g.get(), 'position':(event.x, event.y)})
+            self.effects_loader.set_option('StaticDec', 'positions', positions)
                 #'None'
                 #'Elephant'     = elephant.png
                 #'Giraffe'      = giraffe.png
@@ -214,11 +216,17 @@ class Kamera:
 class EffectsLoader(object):
     """ singleton """
     _instance = None
-    
-    # TODO: make this list of effects
-    effects_list = {}
-    current_effect = None
-    options = {}
+
+    """
+    what's in the effects_dict:
+    key:
+        'EffectClassName'
+    value: a dict where:
+        class : the effect class
+        enabled : True | False
+        option : another dict with key-value pairs
+    """
+    effects_dict = {}
     
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -229,35 +237,33 @@ class EffectsLoader(object):
         import effects
         for name, obj in inspect.getmembers(effects):
             if inspect.isclass(obj) and name != 'KameraEffectBase':
-                cls._instance.effects_list[name] = obj
-        print 'Loaded effects:', ",".join(cls._instance.effects_list)
+                e = {}
+                e['class'] = obj
+                e['enabled'] = False
+                e['option'] = {}
+                cls._instance.effects_dict[name] = e
+        print 'Loaded effects:', ", ".join(cls._instance.effects_dict.keys())
     
-    def get_current_effect(cls):
-        return cls._instance.current_effect
-    
-    def get_effects_list(cls):
-        return cls._instance.effects_list
-    
-    def set_effect(cls, effect_name):
-        cls._instance.current_effect = cls._instance.effects_list[effect_name]
-        cls._instance.clear_options()
+    def get_enabled_effects(cls):
+        return [i for i in cls._instance.effects_dict.values() if i['enabled'] is True]
 
-    def set_option(cls, key, value):
-        cls._instance.options[key] = value
+    def enable_effect(cls, name, should_enable = True):
+        cls._instance.effects_dict[name]['enabled'] = should_enable
     
-    def get_option(cls, key):
-        return cls._instance.options[key]
+    def disable_effect(cls, name):
+        cls.enable_effect(name, False)
     
-    def get_options(cls):
-        return cls._instance.options
+    def set_option(cls, name, key, value):
+        cls._instance.effects_dict[name]['option'][key] = value
     
-    def clear_option(cls, key):
-        cls._instance.options[key] = None
-        
-    def clear_options(cls):
-        cls._instance.options = {}
-
-
+    # default: return this if key not found in option
+    def get_option(cls, name, key, default = None):
+        if key in cls._instance.effects_dict[name]['option']:
+            return cls._instance.effects_dict[name]['option'][key]
+        else:
+            return default
+            
+    
 class VideoLabel(Tk.Label):
     capture = None
     photo_image = None
@@ -279,12 +285,14 @@ class VideoLabel(Tk.Label):
         data = numpy.fliplr(data)
         pil_frame = Image.fromarray(data)
         # Apply effects here?
-        current_effect_class = self.effects_loader.get_current_effect()
-        if current_effect_class is not None:
-            if current_effect_class().get_name() == "DynamicDecoration":
-                pil_frame = current_effect_class().process_image(frame_raw, self.effects_loader.get_options())
-            else:
-                 pil_frame = current_effect_class().process_image(pil_frame, self.effects_loader.get_options())
+        effects = self.effects_loader.get_enabled_effects()
+        if effects:
+            for effect in effects:
+                e = effect['class']()
+                if e.get_name() == "DynamicDecoration":
+                    pil_frame = e.process_image(frame_raw, effect['option'])
+                else:
+                    pil_frame = e.process_image(pil_frame, effect['option'])
         self.photo_image = ImageTk.PhotoImage(pil_frame)
         return pil_frame
         

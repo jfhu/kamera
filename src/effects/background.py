@@ -24,6 +24,7 @@ class Background(Decoration):
     def get_mask(cls, fg, bg):
         mask = Image.new('1', fg.size)
         width, height = mask.size
+        
         # ImageChops.difference(bg, fg)
         # for row in range(height):
         #     for col in range(width):

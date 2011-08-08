@@ -6,6 +6,18 @@ from PIL import Image
 import numpy
 
 class DynamicDec(Decoration):
+    path = '../image/'
+    
+    image_list = {
+        'Tiara'         : 'crown.png',
+        'Crown'         : 'bigcrown.png',
+        'Big Eyes'      : 'eye.png',
+        'Glasses'       : 'glasses.png',
+        'Goggles'       : 'goggle.png',
+        'Mustache'      : 'mustache.png',
+        'Beard'         : 'beard.png',
+        'Kiss'          : 'kiss.png'
+    }
     def get_name(cls):
         return "DynamicDecoration"
     
@@ -20,11 +32,15 @@ class DynamicDec(Decoration):
         data = numpy.fliplr(data)
         pil_frame = Image.fromarray(data)
         
-        dec = Image.open('../image/beard.png')
+        if options['decoration'] == ['None', 'None', 'None', 'None']:
+            return pil_frame
         face = cls.detect_face(image)
         for (x,y,w,h),n in face:
-            pil_frame = cls.addImage(pil_frame, dec, (x, y))
-        
+            for image in options['decoration']:
+                if image != 'None':
+                    print cls.path + cls.image_list[image]
+                    dec = Image.open(cls.path + cls.image_list[image])
+                    pil_frame.paste( dec, (x, y), mask = dec)
         return pil_frame
             
     def detect_face(cls, image):

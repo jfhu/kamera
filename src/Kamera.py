@@ -55,9 +55,10 @@ class Kamera:
     def _test_use_black_white_effect(self):
         # self.effects_loader.set_effect('BlackWhiteEffect')
         # self.effects_loader.set_effect('Decoration')
-        self.effects_loader.enable_effect('StaticDec')
-        self.effects_loader.set_option('StaticDec', 'positions', [])
-        # self.effects_loader.set_effect('DynamicDec')
+        # self.effects_loader.enable_effect('StaticDec')
+        # self.effects_loader.set_option('StaticDec', 'positions', [])
+        self.effects_loader.enable_effect('DynamicDec')
+        self.effects_loader.set_option('DynamicDec', 'decoration', ['None', 'None', 'None', 'None'])
         # self.effects_loader.set_effect('Other')
         # self.effects_loader.set_effect('Background')
     
@@ -191,12 +192,12 @@ class Kamera:
         pass
         # str_var_a.get() for color effects
             #'Original', 'Black/White', 'Red Only', 'Green Only', 'Blue Only', 'R<->B', 'R<->G', 'B<->G', 'R->G->B->R', 'R->B->G->R'
-        color = str_var_a.get()
+        color = self.str_var_a.get()
         self.effects_loader.set_option('Other', 'color', color)
         # str_var_b.get() for mirror effects
             #'No Mirror', 'Vertical', 'Horizontal'
-        mirror = str_var_b.get()
-        self.effects_loader.set_option('Other', 'mirror', Mirror)
+        mirror = self.str_var_b.get()
+        self.effects_loader.set_option('Other', 'mirror', mirror)
         # str_var_c.get(), str_var_d.get(), str_var_e.get(), str_var_f.get() for face items
             #'None'
             #'Tiara'    = crown.png
@@ -207,12 +208,12 @@ class Kamera:
             #'Mustache' = mustache.png
             #'Beard'    = beard.png
             #'Kiss'     = kiss.png
-        hair = str_var_c.get()
-        eye = str_var_d.get()
-        nose = str_var_e.get()
-        mouth = str_var_f.get()
-        dec = [hair, eye, nose, mouse]
-        self.effects_loader.set_option('Dynamic', 'decoration', dec)
+        hair = self.str_var_c.get()
+        eye = self.str_var_d.get()
+        nose = self.str_var_e.get()
+        mouth = self.str_var_f.get()
+        dec = [hair, eye, nose, mouth]
+        self.effects_loader.set_option('DynamicDec', 'decoration', dec)
 
     def event_remove(self):
         self.effects_loader.set_option('StaticDec', 'positions', [])
